@@ -15,11 +15,14 @@ fi
 flg_DryRun=${flg_DryRun:-0}
 export log_section="package"
 
-"${scrDir}/install_aur.sh" "${getAur}" 2>&1
-chk_list "aurhlpr" "${aurList[@]}"
+detect_pm
+
+if [ $PM == "pacman" ]; then
+    "${scrDir}/install_aur.sh" "${getAur}" 2>&1
+    chk_list "aurhlpr" "${aurList[@]}"
+fi
 listPkg="${1:-"${scrDir}/pkg_core.lst"}"
-archPkg=()
-aurhPkg=()
+installPkg=()
 ofs=$IFS
 IFS='|'
 
@@ -59,12 +62,9 @@ while read -r pkg deps; do
     if pkg_installed "${pkg}"; then
         print_log -y "[skip] " "${pkg}"
     elif pkg_available "${pkg}"; then
-        repo=$(pacman -Si "${pkg}" | awk -F ': ' '/Repository / {print $2}')
+        repo=$(info "${pkg}" | awk -F ': ' '/Repository / {print $2}')
         print_log -b "[queue] " -g "${repo}" -b "::" "${pkg}"
-        archPkg+=("${pkg}")
-    elif aur_available "${pkg}"; then
-        print_log -b "[queue] " -g "aur" -b "::" "${pkg}"
-        aurhPkg+=("${pkg}")
+        installPkg+=("${pkg}")
     else
         print_log -r "[error] " "unknown package ${pkg}..."
     fi
@@ -73,13 +73,8 @@ done < <(cut -d '#' -f 1 "${listPkg}")
 IFS=${ofs}
 
 if [ "${flg_DryRun}" -ne 1 ]; then
-    if [[ ${#archPkg[@]} -gt 0 ]]; then
-        print_log -b "[install] " "arch packages..."
-        sudo pacman ${use_default:+"$use_default"} -S "${archPkg[@]}"
-    fi
-
-    if [[ ${#aurhPkg[@]} -gt 0 ]]; then
-        print_log -b "[install] " "aur packages..."
-        "${aurhlpr}" ${use_default:+"$use_default"} -S "${aurhPkg[@]}"
+    if [[ ${#installPkg[@]} -gt 0 ]]; then
+        print_log -b "[install] " "packages..."
+        install ${use_default:+"$use_default"} -S "${installPkg[@]}"
     fi
 fi

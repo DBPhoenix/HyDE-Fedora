@@ -57,17 +57,6 @@ pkg_available() {
     fi
 }
 
-aur_available() {
-    local PkgIn=$1
-
-    # shellcheck disable=SC2154
-    if ${aurhlpr} -Si "${PkgIn}" &>/dev/null; then
-        return 0
-    else
-        return 1
-    fi
-}
-
 nvidia_detect() {
     readarray -t dGPU < <(lspci -k | grep -E "(VGA|3D)" | awk -F ': ' '{print $NF}')
     if [ "${1}" == "--verbose" ]; then
