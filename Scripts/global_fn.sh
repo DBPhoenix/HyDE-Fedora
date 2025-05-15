@@ -20,10 +20,12 @@ export cacheDir
 export aurList
 export shlList
 
+source "$cloneDir/Configs/.local/lib/hyde/pm-lib.sh" # package manager wrapper functions
+
 pkg_installed() {
     local PkgIn=$1
 
-    if pacman -Q "${PkgIn}" &>/dev/null; then
+    if is_installed "${PkgIn}" &>/dev/null; then
         return 0
     else
         return 1
@@ -48,7 +50,7 @@ chk_list() {
 pkg_available() {
     local PkgIn=$1
 
-    if pacman -Si "${PkgIn}" &>/dev/null; then
+    if info "${PkgIn}" &>/dev/null; then
         return 0
     else
         return 1
@@ -101,6 +103,7 @@ prompt_timer() {
     echo ""
     set -e
 }
+
 print_log() {
     local executable="${0##*/}"
     local logFile="${cacheDir}/logs/${HYDE_LOG}/${executable}"
