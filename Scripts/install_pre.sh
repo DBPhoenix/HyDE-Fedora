@@ -72,10 +72,7 @@ if pkg_installed systemd && nvidia_detect && [ "$(bootctl status 2>/dev/null | a
     fi
 fi
 
-
 # pacman
-
-detect_pm
 
 if [ $PM == "paru" || $PM == "yay" || $PM == "pacman" ]; then
 
@@ -122,5 +119,4 @@ if [ $PM == "paru" || $PM == "yay" || $PM == "pacman" ]; then
             sudo "${scrDir}/chaotic_aur.sh" --install
         fi
     fi
-
 fi

@@ -762,3 +762,9 @@ flatpak_file_query() {
     echo "file-query is not supported for Flatpak" >&2
     exit 1
 }
+
+# =============================================================================
+# Detect Package Manager
+# =============================================================================
+
+pm_detect

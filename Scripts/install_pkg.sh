@@ -15,8 +15,6 @@ fi
 flg_DryRun=${flg_DryRun:-0}
 export log_section="package"
 
-detect_pm
-
 if [ $PM == "pacman" ]; then
     "${scrDir}/install_aur.sh" "${getAur}" 2>&1
     chk_list "aurhlpr" "${aurList[@]}"
